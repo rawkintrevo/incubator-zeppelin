@@ -68,6 +68,7 @@
     <module>zeppelin-display</module>
     <module>spark-dependencies</module>
     <module>spark</module>
+    <module>mahout</module>
     <module>markdown</module>
     <module>angular</module>
     <module>shell</module>
@@ -475,6 +476,7 @@
               <exclude>conf/zeppelin-env.sh</exclude>
               <exclude>spark-*-bin*/**</exclude>
               <exclude>.spark-dist/**</exclude>
+              <exclude>**/interpreter-setting.json</exclude>
 
               <!-- bundled from bootstrap -->
               <exclude>docs/assets/themes/zeppelin/bootstrap/**</exclude>
