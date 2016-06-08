@@ -76,3 +76,5 @@
 # export ZEPPELINHUB_API_TOKEN			# Refers to the Zeppelin instance token of the user
 # export ZEPPELINHUB_USER_KEY			# Optional, when using Zeppelin with authentication.
 
+#### Mahout configuration ####
+# export MAHOUT_HOME=               # Directory of Apache Mahout installation

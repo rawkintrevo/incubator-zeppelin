@@ -478,6 +478,7 @@ public class ZeppelinConfiguration extends XMLConfiguration {
     ZEPPELIN_WAR("zeppelin.war", "../zeppelin-web/dist"),
     ZEPPELIN_WAR_TEMPDIR("zeppelin.war.tempdir", "webapps"),
     ZEPPELIN_INTERPRETERS("zeppelin.interpreters", "org.apache.zeppelin.spark.SparkInterpreter,"
+        + "org.apache.zeppelin.mahout.MahoutSparkInterpreter,"
         + "org.apache.zeppelin.spark.PySparkInterpreter,"
         + "org.apache.zeppelin.rinterpreter.RRepl,"
         + "org.apache.zeppelin.rinterpreter.KnitR,"
