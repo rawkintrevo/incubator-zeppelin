@@ -1,0 +1,106 @@
+[
+  {
+    "group": "mahout",
+    "name": "mahout",
+    "className": "org.apache.zeppelin.mahout.MahoutSparkInterpreter",
+    "properties": {
+      "spark.executor.memory": {
+        "envName": null,
+        "propertyName": "spark.executor.memory",
+        "defaultValue": "",
+        "description": "Executor memory per worker instance. ex) 512m, 32g"
+      },
+      "args": {
+        "envName": null,
+        "propertyName": null,
+        "defaultValue": "",
+        "description": "spark commandline args"
+      },
+      "zeppelin.spark.useHiveContext": {
+        "envName": "ZEPPELIN_SPARK_USEHIVECONTEXT",
+        "propertyName": "zeppelin.spark.useHiveContext",
+        "defaultValue": "true",
+        "description": "Use HiveContext instead of SQLContext if it is true."
+      },
+      "spark.app.name": {
+        "envName": "SPARK_APP_NAME",
+        "propertyName": "spark.app.name",
+        "defaultValue": "Zeppelin-Mahout",
+        "description": "The name of spark application."
+      },
+      "zeppelin.spark.printREPLOutput": {
+        "envName": null,
+        "propertyName": null,
+        "defaultValue": "true",
+        "description": "Print REPL output"
+      },
+      "spark.cores.max": {
+        "envName": null,
+        "propertyName": "spark.cores.max",
+        "defaultValue": "",
+        "description": "Total number of cores to use. Empty value uses all available core."
+      },
+      "zeppelin.spark.maxResult": {
+        "envName": "ZEPPELIN_SPARK_MAXRESULT",
+        "propertyName": "zeppelin.spark.maxResult",
+        "defaultValue": "1000",
+        "description": "Max number of SparkSQL result to display."
+      },
+      "master": {
+        "envName": "MASTER",
+        "propertyName": "master",
+        "defaultValue": "local[*]",
+        "description": "Spark master uri. ex) spark://masterhost:7077"
+      },
+
+      "spark.kryo.registrator": {
+        "envName": null,
+        "propertyName": "spark.kryo.registrator",
+        "defaultValue": "org.apache.mahout.sparkbindings.io.MahoutKryoRegistrator",
+        "description": ""
+      },
+      "spark.serializer": {
+        "envName": null,
+        "propertyName": "spark.serializer",
+        "defaultValue": "org.apache.spark.serializer.KryoSerializer",
+        "description": ""
+      },
+      "spark.kryo.referenceTracking": {
+        "envName": null,
+        "propertyName": "spark.kryo.referenceTracking",
+        "defaultValue": "false",
+        "description": ""
+      },
+      "spark.kryoserializer.buffer": {
+        "envName": null,
+        "propertyName": "spark.kryoserializer.buffer",
+        "defaultValue": "64k",
+        "description": "Maximum size and serialized object can be"
+      },
+      "spark.kryoserializer.buffer.max": {
+        "envName": null,
+        "propertyName": "spark.kryoserializer.buffer.max",
+        "defaultValue": "512m",
+        "description": "Maximum size and serialized object can be"
+      },
+      "mahout.home": {
+        "envName": "MAHOUT_HOME",
+        "propertyName": "mahout.home",
+        "defaultValue": "local",
+        "description": "Directory of Apache Mahout Installation"
+      },
+      "mahout.version": {
+        "envName": null,
+        "propertyName": "mahout.version",
+        "defaultValue": "0.12.2",
+        "description": "Version of Mahout to use if mahout.home=local"
+      },
+      "zeppelin.dep.localrepo": {
+        "envName": "ZEPPELIN_DEP_LOCALREPO",
+        "propertyName": null,
+        "defaultValue": "local-repo",
+        "description": "local repository for dependency loader"
+      }
+    }
+  }
+  ]
