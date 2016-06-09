@@ -40,6 +40,7 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
   private static final Logger logger = LoggerFactory.getLogger(MahoutSparkInterpreter.class);
   private SparkIMain intp;
   private boolean firstRun = true;
+  private boolean testing = false;
   
   public MahoutSparkInterpreter(Properties property) {
     super(property);
@@ -59,9 +60,18 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
     super.setClassloaderUrls(mahoutJars);
   }
 
+
+
+  public void setTestingMode(Boolean testing){
+    this.testing = testing;
+  }
+
   @Override
-  public void open() {
-    loadMahoutJars();
+  public void open(Boolean testing) {
+    if (this.testing){
+      loadMahoutJars();
+    }
+
     super.open();
 
     if (super.getSparkVersion().olderThan(SparkVersion.fromVersionString("1.5.0"))){
@@ -73,6 +83,10 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
   @Override
   public InterpreterResult interpret(String s, InterpreterContext context){
     if (firstRun) {
+      if (this.testing){
+        // use dependency loader to fetch jars from maven
+        // https://zeppelin.incubator.apache.org/docs/latest/interpreter/spark.html
+      }
       super.interpret("import org.apache.mahout.math._\n" +
               "import org.apache.mahout.math.scalabindings._\n" +
               "import org.apache.mahout.math.drm._\n" +
