@@ -24,6 +24,7 @@ import org.apache.spark.repl.SparkIMain;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.spark.*;
 
+import org.apache.zeppelin.spark.dep.SparkDependencyResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +39,10 @@ import static org.apache.zeppelin.mahout.utils.*;
 public class MahoutSparkInterpreter extends SparkInterpreter {
 
   private static final Logger logger = LoggerFactory.getLogger(MahoutSparkInterpreter.class);
-  private SparkIMain intp;
+  //private SparkIMain intp; // null pointer if you use this
   private boolean firstRun = true;
-  private boolean testing = false;
-  
+  private SparkDependencyResolver dep;
+
   public MahoutSparkInterpreter(Properties property) {
     super(property);
   }
@@ -60,19 +61,37 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
     super.setClassloaderUrls(mahoutJars);
   }
 
-
-
-  public void setTestingMode(Boolean testing){
-    this.testing = testing;
-  }
-
   @Override
-  public void open(Boolean testing) {
-    if (this.testing){
+  public void open() {
+    if (!getProperty("mahout.home").equals("local")){
       loadMahoutJars();
     }
 
     super.open();
+
+    dep = new SparkDependencyResolver(super.intp,
+            super.getSparkContext(),
+            getProperty("zeppelin.dep.localrepo"),
+            "http://repo.maven.apache.org/maven2");
+
+    if (getProperty("mahout.home").equals("local")){
+      try {
+        dep.load("org.apache.mahout:mahout-math:0.12.1", true);
+        dep.load("org.apache.mahout:mahout-math-scala_2.10:0.12.1", true);
+        dep.load("org.apache.mahout:mahout-spark_2.10:0.12.1", true);
+        //dep.load("org.apache.mahout:mahout-spark-shell_2.10:0.12.1", true);
+      } catch (java.lang.Exception e) {
+        logger.error(e.getMessage(), e);
+      }
+    }
+
+    super.intp.interpret("import org.apache.mahout.math._\n" +
+            "import org.apache.mahout.math.scalabindings._\n" +
+            "import org.apache.mahout.math.drm._\n" +
+            "import org.apache.mahout.math.scalabindings.RLikeOps._\n" +
+            "import org.apache.mahout.math.drm.RLikeDrmOps._\n" +
+            "import org.apache.mahout.sparkbindings._\n" +
+            "implicit val sdc: SparkDistributedContext = sc");
 
     if (super.getSparkVersion().olderThan(SparkVersion.fromVersionString("1.5.0"))){
       logger.error("Spark Version 1.5.0+ only supported. Sorry Charlie.");
@@ -82,11 +101,8 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
 
   @Override
   public InterpreterResult interpret(String s, InterpreterContext context){
+/*
     if (firstRun) {
-      if (this.testing){
-        // use dependency loader to fetch jars from maven
-        // https://zeppelin.incubator.apache.org/docs/latest/interpreter/spark.html
-      }
       super.interpret("import org.apache.mahout.math._\n" +
               "import org.apache.mahout.math.scalabindings._\n" +
               "import org.apache.mahout.math.drm._\n" +
@@ -96,7 +112,7 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
               "implicit val sdc: SparkDistributedContext = sc", context);
       firstRun = false;
     }
-
+*/
     return super.interpret(s, context);
   }
 

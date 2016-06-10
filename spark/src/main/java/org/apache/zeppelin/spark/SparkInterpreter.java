@@ -83,7 +83,7 @@ public class SparkInterpreter extends Interpreter {
 
   private ZeppelinContext z;
   private SparkILoop interpreter;
-  private SparkIMain intp;
+  public SparkIMain intp;
   private static SparkContext sc;
   private static SQLContext sqlc;
   private static SparkEnv env;

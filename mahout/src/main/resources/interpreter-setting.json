@@ -81,8 +81,14 @@
       "mahout.home": {
         "envName": "MAHOUT_HOME",
         "propertyName": "mahout.home",
-        "defaultValue": "",
+        "defaultValue": "local",
         "description": "Directory of Apache Mahout Installation"
+      },
+      "zeppelin.dep.localrepo": {
+        "envName": "ZEPPELIN_DEP_LOCALREPO",
+        "propertyName": null,
+        "defaultValue": "local-repo",
+        "description": "local repository for dependency loader"
       }
     }
   }

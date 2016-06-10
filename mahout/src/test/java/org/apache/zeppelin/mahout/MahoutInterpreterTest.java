@@ -36,21 +36,37 @@ public class MahoutInterpreterTest {
 
     @BeforeClass
     public static void setUp() {
-        Properties p = new Properties();
-        mahout = new MahoutSparkInterpreter(p);
-        mahout.open();
-        context = new InterpreterContext(null, null, null, null, null, null, null, null, null, null, null);
+      Properties p = new Properties();
+      mahout = new MahoutSparkInterpreter(p);
+      mahout.open();
+      context = new InterpreterContext(null, null, null, null, null, null, null, null, null, null, null);
     }
 
     @AfterClass
     public static void tearDown() {
-        mahout.close();
-        mahout.destroy();
+      mahout.close();
+      mahout.destroy();
     }
 
     @Test
     public void testNextLineInvocation() {
-        assertEquals(InterpreterResult.Code.SUCCESS, mahout.interpret("\"123\"\n.toInt", context).code());
+      assertEquals(InterpreterResult.Code.SUCCESS, mahout.interpret("\"123\"\n.toInt", context).code());
+    }
+
+    @Test
+    public void testSdcCreated() {
+      assertEquals(InterpreterResult.Code.SUCCESS, mahout.interpret("sdc", context).code());
+    }
+
+    @Test
+    public void testCanCreateMatrices() {
+      InterpreterResult result = mahout.interpret("val mxRnd = Matrices.symmetricUniformView(50, 2, 1234)", context);
+      assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    }
+
+    @Test
+    public void testCanParallelize() { // spelling on parallelize?
+
     }
 
 }
