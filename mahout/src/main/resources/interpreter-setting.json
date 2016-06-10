@@ -24,9 +24,8 @@
       },
       "spark.app.name": {
         "envName": "SPARK_APP_NAME",
-
         "propertyName": "spark.app.name",
-        "defaultValue": "Zeppelin",
+        "defaultValue": "Zeppelin-Mahout",
         "description": "The name of spark application."
       },
       "zeppelin.spark.printREPLOutput": {
@@ -75,14 +74,32 @@
       "spark.kryoserializer.buffer": {
         "envName": null,
         "propertyName": "spark.kryoserializer.buffer",
-        "defaultValue": "300m",
+        "defaultValue": "64k",
+        "description": "Maximum size and serialized object can be"
+      },
+      "spark.kryoserializer.buffer.max": {
+        "envName": null,
+        "propertyName": "spark.kryoserializer.buffer.max",
+        "defaultValue": "512m",
         "description": "Maximum size and serialized object can be"
       },
       "mahout.home": {
         "envName": "MAHOUT_HOME",
         "propertyName": "mahout.home",
-        "defaultValue": "",
+        "defaultValue": "local",
         "description": "Directory of Apache Mahout Installation"
+      },
+      "mahout.version": {
+        "envName": null,
+        "propertyName": "mahout.version",
+        "defaultValue": "0.12.2",
+        "description": "Version of Mahout to use if mahout.home=local"
+      },
+      "zeppelin.dep.localrepo": {
+        "envName": "ZEPPELIN_DEP_LOCALREPO",
+        "propertyName": null,
+        "defaultValue": "local-repo",
+        "description": "local repository for dependency loader"
       }
     }
   }

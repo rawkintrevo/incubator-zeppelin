@@ -86,7 +86,7 @@ public class SparkInterpreter extends Interpreter {
 
   private ZeppelinContext z;
   private SparkILoop interpreter;
-  private SparkIMain intp;
+  public SparkIMain intp;
   private static SparkContext sc;
   private static SQLContext sqlc;
   private static SparkEnv env;
@@ -213,7 +213,7 @@ public class SparkInterpreter extends Interpreter {
     return dep;
   }
 
-  private DepInterpreter getDepInterpreter() {
+  public DepInterpreter getDepInterpreter() {
     Interpreter p = getInterpreterInTheSameSessionByClassName(DepInterpreter.class.getName());
     if (p == null) {
       return null;

@@ -22,8 +22,7 @@ import java.io._
 import scala.collection._
 
 object utils {
-  def findMahoutContextJars(mahoutHomeString: String) = {
-
+  def scanMahoutHome(mahoutHomeString: String) = {
     val fmhome: File = new File(mahoutHomeString);
     val closeables = mutable.ListBuffer.empty[Closeable]
     // Figure Mahout classpath using $MAHOUT_HOME/mahout classpath command.
@@ -63,6 +62,10 @@ object utils {
       }
     } while (continue)
 
+    jars.toArray
+  }
+
+  def findMahoutContextJars(jars: Array[String]) = {
     //    jars.foreach(j => log.info(j))
     // context specific jars
     val mcjars = jars.filter(j =>
@@ -87,5 +90,32 @@ object utils {
     log.info("\n\n\n")
     */
     mcjars.map(f => new File(f).toURI.toURL).toArray
+  }
+
+  def findMahoutContextJarsStr(jars: Array[String]) = {
+    //    jars.foreach(j => log.info(j))
+    // context specific jars
+    val mcjars = jars.filter(j =>
+      j.matches(".*mahout-math-\\d.*\\.jar") ||
+      j.matches(".*mahout-math-scala_\\d.*\\.jar") ||
+      j.matches(".*mahout-hdfs-\\d.*\\.jar") ||
+      // no need for mapreduce jar in Spark
+      // j.matches(".*mahout-mr-\\d.*\\.jar") ||
+      j.matches(".*mahout-spark_\\d.*\\.jar")
+    )
+        // Tune out "bad" classifiers
+        .filter(n =>
+      !n.matches(".*-tests.jar") &&
+          !n.matches(".*-sources.jar") &&
+          !n.matches(".*-job.jar") &&
+          // During maven tests, the maven classpath also creeps in for some reason
+          !n.matches(".*/.m2/.*")
+        )
+    /* verify jar passed to context
+    log.info("\n\n\n")
+    mcjars.foreach(j => log.info(j))
+    log.info("\n\n\n")
+    */
+    mcjars.map(f => new File(f).getAbsolutePath).toArray
   }
 }
