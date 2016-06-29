@@ -65,7 +65,7 @@ public class MahoutSparkInterpreterTest {
 
 
         Properties p = new Properties();
-        p.setProperty("zeppelin.spark.useHiveContext", "true");
+        p.setProperty("zeppelin.spark.useHiveContext", "false");
         p.setProperty("spark.app.name", "Zeppelin Test");
         p.setProperty("zeppelin.spark.maxResult", "1000");
         p.setProperty("master", "local[*]");
