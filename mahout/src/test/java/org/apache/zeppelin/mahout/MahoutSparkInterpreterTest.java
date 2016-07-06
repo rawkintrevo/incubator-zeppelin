@@ -75,7 +75,6 @@ public class MahoutSparkInterpreterTest {
         p.setProperty("spark.kryoserializer.buffer", "300m");
         p.setProperty("mahout.home", "local");
         p.setProperty("mahout.version", "0.12.2");
-        p.setProperty("use.python", "false");
         return p;
     }
 
@@ -87,10 +86,10 @@ public class MahoutSparkInterpreterTest {
 
         if (repl == null) {
             intpGroup = new InterpreterGroup();
-            intpGroup.put("note", new LinkedList<Interpreter>());
+            intpGroup.put("mahout_note", new LinkedList<Interpreter>());
             repl = new MahoutSparkInterpreter(p);
             repl.setInterpreterGroup(intpGroup);
-            intpGroup.get("note").add(repl);
+            intpGroup.get("mahout_note").add(repl);
             repl.open();
         }
 
