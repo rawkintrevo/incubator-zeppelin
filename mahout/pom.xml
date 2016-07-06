@@ -29,7 +29,7 @@
   <groupId>org.apache.zeppelin</groupId>
   <artifactId>zeppelin-mahout</artifactId>
   <packaging>jar</packaging>
-  <version>0.6.0-SNAPSHOT</version>
+  <version>0.7.0-SNAPSHOT</version>
   <name>Zeppelin: Mahout</name>
   <description>Zeppelin Mahout support</description>
   <url>http://zeppelin.apache.org</url>
