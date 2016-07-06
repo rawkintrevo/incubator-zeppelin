@@ -84,20 +84,20 @@ public class MahoutSparkInterpreterTest {
         Properties p = getMahoutSparkTestProperties();
         p.setProperty("zeppelin.dep.localrepo", "local-repo");
 
-        if (repl == null) {
-            intpGroup = new InterpreterGroup();
-            intpGroup.put("mahout_note", new LinkedList<Interpreter>());
-            repl = new MahoutSparkInterpreter(p);
-            repl.setInterpreterGroup(intpGroup);
-            intpGroup.get("mahout_note").add(repl);
-            repl.open();
-        }
+        //if (repl == null) {
+            //intpGroup = new InterpreterGroup();
+            //intpGroup.put("mahout_note", new LinkedList<Interpreter>());
+        repl = new MahoutSparkInterpreter(p);
+            //repl.setInterpreterGroup(intpGroup);
+            //intpGroup.get("mahout_note").add(repl);
+        repl.open();
+        //}
 
         context = new InterpreterContext("note", "id", "title", "text",
                 new AuthenticationInfo(),
                 new HashMap<String, Object>(),
                 new GUI(),
-                new AngularObjectRegistry(intpGroup.getId(), null),
+                null, //new AngularObjectRegistry(intpGroup.getId(), null),
                 null,
                 new LinkedList<InterpreterContextRunner>(),
                 new InterpreterOutput(new InterpreterOutputListener() {
