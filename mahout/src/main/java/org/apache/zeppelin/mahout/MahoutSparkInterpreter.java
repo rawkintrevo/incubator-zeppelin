@@ -23,6 +23,7 @@ import java.util.*;
 import java.io.File;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.spark.SparkContext;
 import org.apache.zeppelin.dep.DependencyContext;
 import org.apache.zeppelin.dep.DependencyResolver;
 import org.apache.zeppelin.interpreter.*;
@@ -49,6 +50,8 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
   private DependencyResolver dep;
   private SparkDependencyResolver sdep;
   private String[] jarPaths;
+
+
 
   private List<String> artifacts = Arrays.asList(
           "org.apache.mahout:mahout-math:",
@@ -130,6 +133,8 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
       loadMahoutJarsFromMaven(mahoutVersion);
     }
 
+    // Copy-Paste from SparkInterpretter.open
+
     super.open();
 
     if (!getProperty("master").equals("local[*]")) {
@@ -138,7 +143,7 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
         for (String a : jarPaths) {
           sdep.load(a, true);
         }
-        sdep.load("com.google.guava:guava", true);
+        sdep.load("com.google.guava:guava:14.0.1", true);
       } catch (java.lang.Exception e) { logger.error("Error Loading: " + e.getMessage(), e); }
     }
 
@@ -161,4 +166,22 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
     return super.interpret(s, context);
   }
 
+
+  @Override
+  public void close() {
+    logger.info("Close interpreter");
+/*
+    if (numReferenceOfSparkContext.decrementAndGet() == 0) {
+      sc.stop();
+      sc = null;
+    }
+*/
+    intp.close();
+  }
+
+  @Override
+  public void destroy() {
+    super.sc.stop();
+    sc = null;
+  }
 }

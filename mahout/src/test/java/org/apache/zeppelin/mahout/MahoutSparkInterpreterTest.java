@@ -75,7 +75,7 @@ public class MahoutSparkInterpreterTest {
         p.setProperty("spark.kryoserializer.buffer", "300m");
         p.setProperty("mahout.home", "local");
         p.setProperty("mahout.version", "0.12.2");
-
+        p.setProperty("use.python", "false");
         return p;
     }
 
@@ -116,7 +116,9 @@ public class MahoutSparkInterpreterTest {
 
     @After
     public void tearDown() {
-
+        //repl.close();
+        repl.destroy();
+        repl = null;
     }
 
     @Test  // repeated basic functions check from SparkInterpreterterTest
