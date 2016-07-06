@@ -17,6 +17,16 @@
 
 package org.apache.zeppelin.python;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
@@ -26,24 +36,16 @@ import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.scheduler.Job;
 import org.apache.zeppelin.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import py4j.GatewayServer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+import py4j.GatewayServer;
 
 /**
  * Python interpreter for Zeppelin.
  */
 public class PythonInterpreter extends Interpreter {
-  Logger logger = LoggerFactory.getLogger(PythonInterpreter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PythonInterpreter.class);
 
   public static final String BOOTSTRAP_PY = "/bootstrap.py";
   public static final String BOOTSTRAP_INPUT_PY = "/bootstrap_input.py";
@@ -53,8 +55,9 @@ public class PythonInterpreter extends Interpreter {
 
   private Integer port;
   private GatewayServer gatewayServer;
-  private Boolean py4J = false;
+  private Boolean py4JisInstalled = false;
   private InterpreterContext context;
+  private Pattern errorInLastLine = Pattern.compile(".*(Error|Exception): .*$");
   private int maxResult;
 
   PythonProcess process = null;
@@ -65,8 +68,8 @@ public class PythonInterpreter extends Interpreter {
 
   @Override
   public void open() {
-    logger.info("Starting Python interpreter .....");
-    logger.info("Python path is set to:" + property.getProperty(ZEPPELIN_PYTHON));
+    LOG.info("Starting Python interpreter .....");
+    LOG.info("Python path is set to:" + property.getProperty(ZEPPELIN_PYTHON));
 
     maxResult = Integer.valueOf(getProperty(MAX_RESULT));
     process = getPythonProcess();
@@ -74,32 +77,33 @@ public class PythonInterpreter extends Interpreter {
     try {
       process.open();
     } catch (IOException e) {
-      logger.error("Can't start the python process", e);
+      LOG.error("Can't start the python process", e);
     }
 
     try {
-      logger.info("python PID : " + process.getPid());
+      LOG.info("python PID : " + process.getPid());
     } catch (Exception e) {
-      logger.warn("Can't find python pid process", e);
+      LOG.warn("Can't find python pid process", e);
     }
 
     try {
-      logger.info("Bootstrap interpreter with " + BOOTSTRAP_PY);
+      LOG.info("Bootstrap interpreter with " + BOOTSTRAP_PY);
       bootStrapInterpreter(BOOTSTRAP_PY);
     } catch (IOException e) {
-      logger.error("Can't execute " + BOOTSTRAP_PY + " to initiate python process", e);
+      LOG.error("Can't execute " + BOOTSTRAP_PY + " to initiate python process", e);
     }
 
-    if (py4J = isPy4jInstalled()) {
+    py4JisInstalled = isPy4jInstalled();
+    if (py4JisInstalled) {
       port = findRandomOpenPortOnAllLocalInterfaces();
-      logger.info("Py4j gateway port : " + port);
+      LOG.info("Py4j gateway port : " + port);
       try {
         gatewayServer = new GatewayServer(this, port);
         gatewayServer.start();
-        logger.info("Bootstrap inputs with " + BOOTSTRAP_INPUT_PY);
+        LOG.info("Bootstrap inputs with " + BOOTSTRAP_INPUT_PY);
         bootStrapInterpreter(BOOTSTRAP_INPUT_PY);
       } catch (IOException e) {
-        logger.error("Can't execute " + BOOTSTRAP_INPUT_PY + " to " +
+        LOG.error("Can't execute " + BOOTSTRAP_INPUT_PY + " to " +
             "initialize Zeppelin inputs in python process", e);
       }
     }
@@ -107,7 +111,7 @@ public class PythonInterpreter extends Interpreter {
 
   @Override
   public void close() {
-    logger.info("closing Python interpreter .....");
+    LOG.info("closing Python interpreter .....");
     try {
       if (process != null) {
         process.close();
@@ -116,19 +120,37 @@ public class PythonInterpreter extends Interpreter {
         gatewayServer.shutdown();
       }
     } catch (IOException e) {
-      logger.error("Can't close the interpreter", e);
+      LOG.error("Can't close the interpreter", e);
     }
   }
 
   @Override
   public InterpreterResult interpret(String cmd, InterpreterContext contextInterpreter) {
-    this.context = contextInterpreter;
     if (cmd == null || cmd.isEmpty()) {
       return new InterpreterResult(Code.SUCCESS, "");
     }
+    this.context = contextInterpreter;
     String output = sendCommandToPython(cmd);
-    return new InterpreterResult(Code.SUCCESS, output.replaceAll(">>>", "")
-        .replaceAll("\\.\\.\\.", "").trim());
+
+    InterpreterResult result;
+    if (pythonErrorIn(output)) {
+      result = new InterpreterResult(Code.ERROR, output.replaceAll(">>>", "").trim());
+    } else {
+      result = new InterpreterResult(Code.SUCCESS, output.replaceAll(">>>", "")
+          .replaceAll("\\.\\.\\.", "").trim());
+    }
+    return result;
+  }
+
+  /**
+   * Checks if there is a syntax error or an exception
+   *
+   * @param output Python interpreter output
+   * @return true if syntax error or exception has happened
+   */
+  private boolean pythonErrorIn(String output) {
+    Matcher errorMatcher = errorInLastLine.matcher(output);
+    return errorMatcher.find();
   }
 
   @Override
@@ -136,7 +158,7 @@ public class PythonInterpreter extends Interpreter {
     try {
       process.interrupt();
     } catch (IOException e) {
-      logger.error("Can't interrupt the python interpreter", e);
+      LOG.error("Can't interrupt the python interpreter", e);
     }
   }
 
@@ -184,17 +206,17 @@ public class PythonInterpreter extends Interpreter {
 
   private String sendCommandToPython(String cmd) {
     String output = "";
-    logger.info("Sending : \n" + (cmd.length() > 200 ? cmd.substring(0, 200) + "..." : cmd));
+    LOG.info("Sending : \n" + (cmd.length() > 200 ? cmd.substring(0, 200) + "..." : cmd));
     try {
       output = process.sendAndGetResult(cmd);
     } catch (IOException e) {
-      logger.error("Error when sending commands to python process", e);
+      LOG.error("Error when sending commands to python process", e);
     }
     //logger.info("Got : \n" + output);
     return output;
   }
 
-  private void bootStrapInterpreter(String file) throws IOException {
+  void bootStrapInterpreter(String file) throws IOException {
     BufferedReader bootstrapReader = new BufferedReader(
         new InputStreamReader(
             PythonInterpreter.class.getResourceAsStream(file)));
@@ -204,10 +226,10 @@ public class PythonInterpreter extends Interpreter {
     while ((line = bootstrapReader.readLine()) != null) {
       bootstrapCode += line + "\n";
     }
-    if (py4J && port != null && port != -1) {
+    if (py4JisInstalled && port != null && port != -1) {
       bootstrapCode = bootstrapCode.replaceAll("\\%PORT\\%", port.toString());
     }
-    logger.info("Bootstrap python interpreter with code from \n " + file);
+    LOG.info("Bootstrap python interpreter with code from \n " + file);
     sendCommandToPython(bootstrapCode);
   }
 
@@ -234,7 +256,7 @@ public class PythonInterpreter extends Interpreter {
       port = socket.getLocalPort();
       socket.close();
     } catch (IOException e) {
-      logger.error("Can't find an open port", e);
+      LOG.error("Can't find an open port", e);
     }
     return port;
   }

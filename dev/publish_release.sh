@@ -82,7 +82,12 @@ function publish_to_maven() {
     "${NEXUS_STAGING}/profiles/${NEXUS_PROFILE}/start")"
   create_ret=$?
   curl_error $create_ret
-  staged_repo_id="$(echo "${out}" | sed -e 's/.*\(orgapachezeppelin-[0-9]\{4\}\).*/\1/')"
+  staged_repo_id="$(echo ${out} | sed -e 's/.*\(orgapachezeppelin-[0-9]\{4\}\).*/\1/')"
+  if [[ -z "${staged_repo_id}" ]]; then
+    echo "Fail to create staging repository"
+    exit 1
+  fi
+
   echo "Created Nexus staging repository: ${staged_repo_id}"
 
   tmp_repo="$(mktemp -d /tmp/zeppelin-repo-XXXXX)"
@@ -124,7 +129,7 @@ function publish_to_maven() {
   repo_request="<promoteRequest><data><stagedRepositoryId>${staged_repo_id}</stagedRepositoryId><description>Apache Zeppelin ${RELEASE_VERSION}</description></data></promoteRequest>"
   out="$(curl -X POST -d "${repo_request}" -u "${ASF_USERID}:${ASF_PASSWORD}" \
     -H 'Content-Type:application/xml' -v \
-    "${NEXUS_STAGING}}/profiles/${NEXUS_PROFILE}/finish")"
+    "${NEXUS_STAGING}/profiles/${NEXUS_PROFILE}/finish")"
   close_ret=$?
   curl_error $close_ret
   echo "Closed Nexus staging repository: ${staged_repo_id}"

@@ -24,14 +24,14 @@
     <parent>
         <artifactId>zeppelin</artifactId>
         <groupId>org.apache.zeppelin</groupId>
-        <version>0.6.0-SNAPSHOT</version>
+        <version>0.7.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
     <groupId>org.apache.zeppelin</groupId>
     <artifactId>zeppelin-livy</artifactId>
     <packaging>jar</packaging>
-    <version>0.6.0-SNAPSHOT</version>
+    <version>0.7.0-SNAPSHOT</version>
     <name>Zeppelin: Livy interpreter</name>
     <url>http://zeppelin.apache.org</url>
 
@@ -96,6 +96,17 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security.kerberos</groupId>
+            <artifactId>spring-security-kerberos-client</artifactId>
+            <version>1.0.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>4.3.0.RELEASE</version>
+        </dependency>
+
     </dependencies>
 
     <build>
