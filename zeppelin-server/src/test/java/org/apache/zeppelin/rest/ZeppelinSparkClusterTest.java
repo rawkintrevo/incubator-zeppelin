@@ -130,6 +130,9 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
 //            p.getRepl("org.apache.zeppelin.spark.SparkInterpreter").open();
             note.run(p.getId());
             waitForFinish(p);
+            if (p.getStatus() != Status.FINISHED){
+                LOG.info("pySparkTest: " + p.getResult().toString());
+            }
             assertEquals(Status.FINISHED, p.getStatus());
             assertEquals("55\n", p.getResult().message());
         }
