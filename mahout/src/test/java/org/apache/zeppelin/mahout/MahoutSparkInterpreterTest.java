@@ -93,7 +93,8 @@ public class MahoutSparkInterpreterTest {
         repl.open();
         //}
 
-        context = new InterpreterContext("note", "id", "title", "text",
+
+        context = new InterpreterContext("m_note", "m_id", "m_title", "m_text",
                 new AuthenticationInfo(),
                 new HashMap<String, Object>(),
                 new GUI(),
@@ -111,6 +112,7 @@ public class MahoutSparkInterpreterTest {
 
                     }
                 }));
+        
     }
 
     @After
