@@ -136,6 +136,7 @@ public abstract class AbstractTestRestApi {
 
         // set spark home for pyspark
         sparkIntpSetting.getProperties().setProperty("spark.home", getSparkHome());
+
         pySpark = true;
         sparkR = true;
         ZeppelinServer.notebook.getInterpreterFactory().restart(sparkIntpSetting.id());
@@ -155,7 +156,7 @@ public abstract class AbstractTestRestApi {
           pySpark = true;
           sparkR = true;
         }
-
+        LOG.info("spark.home set to: " + getSparkHome());
         ZeppelinServer.notebook.getInterpreterFactory().restart(sparkIntpSetting.id());
       }
     }
