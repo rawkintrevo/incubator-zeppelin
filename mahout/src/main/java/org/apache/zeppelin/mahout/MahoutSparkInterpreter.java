@@ -133,8 +133,6 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
       loadMahoutJarsFromMaven(mahoutVersion);
     }
 
-    // Copy-Paste from SparkInterpretter.open
-
     super.open();
 
     if (!getProperty("master").equals("local[*]")) {

@@ -28,6 +28,7 @@ import java.util.Properties;
 import org.apache.zeppelin.dep.DependencyResolver;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 
+import org.apache.zeppelin.resource.LocalResourcePool;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.interpreter.*;
@@ -84,22 +85,23 @@ public class MahoutSparkInterpreterTest {
         Properties p = getMahoutSparkTestProperties();
         p.setProperty("zeppelin.dep.localrepo", "local-repo");
 
-        //if (repl == null) {
-            //intpGroup = new InterpreterGroup();
-            //intpGroup.put("mahout_note", new LinkedList<Interpreter>());
-        repl = new MahoutSparkInterpreter(p);
-            //repl.setInterpreterGroup(intpGroup);
-            //intpGroup.get("mahout_note").add(repl);
-        repl.open();
-        //}
+
+        if (repl == null) {
+            intpGroup = new InterpreterGroup();
+            intpGroup.put("mahout_note", new LinkedList<Interpreter>());
+            repl = new MahoutSparkInterpreter(p);
+            repl.setInterpreterGroup(intpGroup);
+            intpGroup.get("mahout_note").add(repl);
+            repl.open();
+        }
 
 
         context = new InterpreterContext("m_note", "m_id", "m_title", "m_text",
                 new AuthenticationInfo(),
                 new HashMap<String, Object>(),
                 new GUI(),
-                null, //new AngularObjectRegistry(intpGroup.getId(), null),
-                null,
+                new AngularObjectRegistry(intpGroup.getId(), null),
+                new LocalResourcePool("m_id"),
                 new LinkedList<InterpreterContextRunner>(),
                 new InterpreterOutput(new InterpreterOutputListener() {
                     @Override
@@ -112,14 +114,14 @@ public class MahoutSparkInterpreterTest {
 
                     }
                 }));
-        
+
     }
 
     @After
     public void tearDown() {
         //repl.close();
-        repl.destroy();
-        repl = null;
+        //repl.destroy();
+        //repl = null;
     }
 
     @Test  // repeated basic functions check from SparkInterpreterterTest
