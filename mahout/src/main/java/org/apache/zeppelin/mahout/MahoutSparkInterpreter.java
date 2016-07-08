@@ -17,13 +17,19 @@
 
 package org.apache.zeppelin.mahout;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 
 import java.util.*;
 import java.io.File;
 
+import com.google.common.base.Joiner;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.spark.HttpServer;
+import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
+import org.apache.spark.repl.SparkILoop;
 import org.apache.zeppelin.dep.DependencyContext;
 import org.apache.zeppelin.dep.DependencyResolver;
 import org.apache.zeppelin.interpreter.*;
@@ -181,5 +187,78 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
   public void destroy() {
     super.sc.stop();
     sc = null;
+  }
+
+  @Override
+  public SparkContext createSparkContext() {
+    logger.info("------ Create new SparkContext {} -------", getProperty("master"));
+
+    String execUri = System.getenv("SPARK_EXECUTOR_URI");
+    String[] jars = SparkILoop.getAddedJars();
+
+    String classServerUri = null;
+
+    try { // in case of spark 1.1x, spark 1.2x
+      Method classServer = interpreter.intp().getClass().getMethod("classServer");
+      HttpServer httpServer = (HttpServer) classServer.invoke(interpreter.intp());
+      classServerUri = httpServer.uri();
+    } catch (NoSuchMethodException | SecurityException | IllegalAccessException
+            | IllegalArgumentException | InvocationTargetException e) {
+      // continue
+    }
+
+    if (classServerUri == null) {
+      try { // for spark 1.3x
+        Method classServer = interpreter.intp().getClass().getMethod("classServerUri");
+        classServerUri = (String) classServer.invoke(interpreter.intp());
+      } catch (NoSuchMethodException | SecurityException | IllegalAccessException
+              | IllegalArgumentException | InvocationTargetException e) {
+        // continue instead of: throw new InterpreterException(e);
+        // Newer Spark versions (like the patched CDH5.7.0 one) don't contain this method
+        logger.warn(String.format("Spark method classServerUri not available due to: [%s]",
+                e.getMessage()));
+      }
+    }
+
+    SparkConf conf =
+            new SparkConf()
+                    .setMaster(getProperty("master"))
+                    .setAppName(getProperty("spark.app.name"));
+
+    if (classServerUri != null) {
+      conf.set("spark.repl.class.uri", classServerUri);
+    }
+
+    if (jars.length > 0) {
+      conf.setJars(jars);
+    }
+
+    if (execUri != null) {
+      conf.set("spark.executor.uri", execUri);
+    }
+    if (System.getenv("SPARK_HOME") != null) {
+      conf.setSparkHome(System.getenv("SPARK_HOME"));
+    }
+    conf.set("spark.scheduler.mode", "FAIR");
+
+    Properties intpProperty = getProperty();
+
+    for (Object k : intpProperty.keySet()) {
+      String key = (String) k;
+      String val = intpProperty.get(key).toString();
+      if (!key.startsWith("spark.") || !val.trim().isEmpty()) {
+        logger.debug(String.format("SparkConf: key = [%s], value = [%s]", key, val));
+        conf.set(key, val);
+      }
+    }
+
+    // Distributes needed libraries to workers
+    // when spark version is greater than or equal to 1.5.0
+    if (getProperty("master").equals("yarn-client")) {
+      conf.set("spark.yarn.isPython", "true");
+    }
+
+    SparkContext sparkContext = new SparkContext(conf);
+    return sparkContext;
   }
 }

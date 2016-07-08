@@ -120,8 +120,8 @@ public class MahoutSparkInterpreterTest {
     @After
     public void tearDown() {
         //repl.close();
-        //repl.destroy();
-        //repl = null;
+        repl.destroy();
+        repl = null;
     }
 
     @Test  // repeated basic functions check from SparkInterpreterterTest

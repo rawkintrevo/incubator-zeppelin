@@ -87,7 +87,7 @@ public class SparkInterpreter extends Interpreter {
   public static Logger logger = LoggerFactory.getLogger(SparkInterpreter.class);
 
   private ZeppelinContext z;
-  private SparkILoop interpreter;
+  public SparkILoop interpreter;
   public SparkIMain intp;
   public static SparkContext sc;
   private static SQLContext sqlc;
