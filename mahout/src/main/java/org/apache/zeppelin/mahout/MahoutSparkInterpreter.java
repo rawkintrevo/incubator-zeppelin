@@ -194,14 +194,15 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
     sc = null;
   }
 */
+  /* no multiple spark context in zeppelin
   @Override //disable sync lock
   public SparkContext getSparkContext() {
     SparkContext sc = createSparkContext();
     return sc;
 
   }
-
-  @Override // no python stuff
+*/
+  @Override
   public SparkContext createSparkContext() {
     logger.info("------ Create new MahoutSparkContext {} -------", getProperty("master"));
 
