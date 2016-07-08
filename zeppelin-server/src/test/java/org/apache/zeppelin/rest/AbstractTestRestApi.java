@@ -125,6 +125,7 @@ public abstract class AbstractTestRestApi {
         // assume first one is spark
         InterpreterSetting sparkIntpSetting = null;
         for(InterpreterSetting intpSetting : ZeppelinServer.notebook.getInterpreterFactory().get()) {
+          LOG.info("factory terp: " + intpSetting.getGroup() + " " + intpSetting.getName());
           if (intpSetting.getGroup().equals("spark")) {
             sparkIntpSetting = intpSetting;
           }
@@ -135,7 +136,11 @@ public abstract class AbstractTestRestApi {
         sparkIntpSetting.getProperties().setProperty("spark.cores.max", "2");
 
         // set spark home for pyspark
+
         sparkIntpSetting.getProperties().setProperty("spark.home", getSparkHome());
+
+        LOG.info("pyspark home set at: " + getSparkHome());
+        LOG.info("pyspark files: " + new File(getSparkHome()+"/python/lib").listFiles());
 
         pySpark = true;
         sparkR = true;
@@ -172,6 +177,7 @@ public abstract class AbstractTestRestApi {
   }
 
   private static String getSparkHome() {
+    LOG.info("user.dir is: " + System.getProperty("user.dir"));
     String sparkHome = getSparkHomeRecursively(new File(System.getProperty("user.dir")));
     System.out.println("SPARK HOME detected " + sparkHome);
     return sparkHome;
@@ -192,6 +198,7 @@ public abstract class AbstractTestRestApi {
 
     File homeDetected = null;
     for (File f : files) {
+      LOG.info("searching active spark home in: " + f);
       if (isActiveSparkHome(f)) {
         homeDetected = f;
         break;
@@ -211,6 +218,7 @@ public abstract class AbstractTestRestApi {
       if (pidDir.isDirectory() && pidDir.listFiles().length > 0) {
         return true;
       }
+      
     }
     return false;
   }

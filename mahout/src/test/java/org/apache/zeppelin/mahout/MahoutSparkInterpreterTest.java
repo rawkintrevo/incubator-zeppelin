@@ -119,9 +119,10 @@ public class MahoutSparkInterpreterTest {
 
     @After
     public void tearDown() {
+        // These have no known effect on pyspark errors
         //repl.close();
-        repl.destroy();
-        repl = null;
+        //repl.destroy();
+        //repl = null;
     }
 
     @Test  // repeated basic functions check from SparkInterpreterterTest

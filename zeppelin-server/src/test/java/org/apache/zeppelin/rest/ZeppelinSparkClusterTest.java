@@ -118,6 +118,10 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
         // create new note
         Note note = ZeppelinServer.notebook.createNote(null);
         note.setName("note");
+        for(InterpreterSetting intpSetting : ZeppelinServer.notebook.getInterpreterFactory().get()) {
+            LOG.info("pysparktest binded terp: " + intpSetting.getGroup() + " " + intpSetting.getName());
+        }
+
         int sparkVersion = getSparkVersionNumber(note);
 
         if (isPyspark() && sparkVersion >= 12) {   // pyspark supported from 1.2.1
@@ -132,6 +136,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
             waitForFinish(p);
             if (p.getStatus() != Status.FINISHED){
                 LOG.info("pySparkTest: " + p.getResult().toString());
+                LOG.info("but pyspark is: " + pySpark);
             }
             assertEquals(Status.FINISHED, p.getStatus());
             assertEquals("55\n", p.getResult().message());

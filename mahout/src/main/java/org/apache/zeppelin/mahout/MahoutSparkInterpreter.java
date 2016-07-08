@@ -29,6 +29,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.spark.HttpServer;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
+import org.apache.spark.SparkEnv;
 import org.apache.spark.repl.SparkILoop;
 import org.apache.spark.repl.SparkIMain;
 import org.apache.zeppelin.dep.DependencyContext;
@@ -193,7 +194,14 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
     sc = null;
   }
 */
-  @Override
+  @Override //disable sync lock
+  public SparkContext getSparkContext() {
+    SparkContext sc = createSparkContext();
+    return sc;
+
+  }
+
+  @Override // no python stuff
   public SparkContext createSparkContext() {
     logger.info("------ Create new MahoutSparkContext {} -------", getProperty("master"));
 
