@@ -30,6 +30,7 @@ import org.apache.spark.HttpServer;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.repl.SparkILoop;
+import org.apache.spark.repl.SparkIMain;
 import org.apache.zeppelin.dep.DependencyContext;
 import org.apache.zeppelin.dep.DependencyResolver;
 import org.apache.zeppelin.interpreter.*;
@@ -57,7 +58,9 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
   private SparkDependencyResolver sdep;
   private String[] jarPaths;
 
-
+//  private SparkILoop interpreter;
+//  private SparkIMain intp;
+//  private static SparkContext sc;
 
   private List<String> artifacts = Arrays.asList(
           "org.apache.mahout:mahout-math:",
@@ -99,7 +102,7 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
     String localRepo = getProperty("zeppelin.dep.localrepo");
     logger.info("Attemping to download Mahout jars to: " + localRepo);
     try {
-      URL[] prevUrls = super.getClassloaderUrls();
+      URL[] prevUrls = getClassloaderUrls();
       ArrayList<URL> newUrls = new ArrayList<URL>();
       ArrayList<String> newJars = new ArrayList<String>();
       dep = new DependencyResolver(localRepo);
@@ -142,7 +145,7 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
     super.open();
 
     if (!getProperty("master").equals("local[*]")) {
-      sdep = super.getDependencyResolver();
+      sdep = getDependencyResolver();
       try {
         for (String a : jarPaths) {
           sdep.load(a, true);
@@ -151,10 +154,11 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
       } catch (java.lang.Exception e) { logger.error("Error Loading: " + e.getMessage(), e); }
     }
 
-    if (super.getSparkVersion().olderThan(SparkVersion.fromVersionString("1.5.0"))){
+    if (getSparkVersion().olderThan(SparkVersion.fromVersionString("1.5.0"))){
       // todo move to before open and change mahout version to 0.11.1 if in 1.4.x
       new InterpreterResult(InterpreterResult.Code.ERROR, "Mahout-Spark requires version 1.5.0+");
     };
+
   }
 
   @Override
@@ -164,13 +168,13 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
       super.interpret(importStatement + setupSdcStatement, context);
       firstRun = false;
     }
-    if (super.getSparkVersion().olderThan(SparkVersion.fromVersionString("1.5.0"))){
+    if (getSparkVersion().olderThan(SparkVersion.fromVersionString("1.5.0"))){
       new InterpreterResult(InterpreterResult.Code.ERROR, "Mahout-Spark requires version 1.5.0+");
     }
     return super.interpret(s, context);
   }
 
-
+/*
   @Override
   public void close() {
     logger.info("Close interpreter");
@@ -179,24 +183,26 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
       sc.stop();
       sc = null;
     }
-*/
+
     intp.close();
   }
 
   @Override
   public void destroy() {
-    super.sc.stop();
+    sc.stop();
     sc = null;
   }
-
+*/
   @Override
   public SparkContext createSparkContext() {
-    logger.info("------ Create new SparkContext {} -------", getProperty("master"));
+    logger.info("------ Create new MahoutSparkContext {} -------", getProperty("master"));
 
     String execUri = System.getenv("SPARK_EXECUTOR_URI");
     String[] jars = SparkILoop.getAddedJars();
 
     String classServerUri = null;
+
+    SparkILoop interpreter = getInterpreter(); //tg
 
     try { // in case of spark 1.1x, spark 1.2x
       Method classServer = interpreter.intp().getClass().getMethod("classServer");
@@ -258,7 +264,10 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
       conf.set("spark.yarn.isPython", "true");
     }
 
+    setInterpreter(interpreter);
+
     SparkContext sparkContext = new SparkContext(conf);
     return sparkContext;
   }
+
 }

@@ -87,9 +87,9 @@ public class SparkInterpreter extends Interpreter {
   public static Logger logger = LoggerFactory.getLogger(SparkInterpreter.class);
 
   private ZeppelinContext z;
-  public SparkILoop interpreter;
-  public SparkIMain intp;
-  public static SparkContext sc;
+  private SparkILoop interpreter;
+  private SparkIMain intp;
+  private static SparkContext sc;
   private static SQLContext sqlc;
   private static SparkEnv env;
   private static JobProgressListener sparkListener;
@@ -104,6 +104,14 @@ public class SparkInterpreter extends Interpreter {
   private Map<String, Object> binder;
   private SparkVersion sparkVersion;
 
+  //tg
+  public SparkILoop getInterpreter(){
+    return interpreter;
+  }
+
+  public void setInterpreter(SparkILoop updatedInterpreter){
+    this.interpreter = updatedInterpreter;
+  }
 
   public SparkInterpreter(Properties property) {
     super(property);
@@ -858,7 +866,7 @@ public class SparkInterpreter extends Interpreter {
     if (lastObj != null) {
       ResourcePool resourcePool = context.getResourcePool();
       resourcePool.put(context.getNoteId(), context.getParagraphId(),
-          WellKnownResourceName.ZeppelinReplResult.toString(), lastObj);
+              WellKnownResourceName.ZeppelinReplResult.toString(), lastObj);
     }
   };
 
