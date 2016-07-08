@@ -140,7 +140,9 @@ public abstract class AbstractTestRestApi {
         sparkIntpSetting.getProperties().setProperty("spark.home", getSparkHome());
 
         LOG.info("pyspark home set at: " + getSparkHome());
-        LOG.info("pyspark files: " + new File(getSparkHome()+"/python/lib").listFiles());
+        for (File f:  new File(getSparkHome()+"/python/lib").listFiles()){
+          LOG.info("pyspark files: " + f.toString());
+        }
 
         pySpark = true;
         sparkR = true;
@@ -218,7 +220,7 @@ public abstract class AbstractTestRestApi {
       if (pidDir.isDirectory() && pidDir.listFiles().length > 0) {
         return true;
       }
-      
+
     }
     return false;
   }
