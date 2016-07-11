@@ -125,7 +125,6 @@ public abstract class AbstractTestRestApi {
         // assume first one is spark
         InterpreterSetting sparkIntpSetting = null;
         for(InterpreterSetting intpSetting : ZeppelinServer.notebook.getInterpreterFactory().get()) {
-          LOG.info("factory terp: " + intpSetting.getGroup() + " " + intpSetting.getName());
           if (intpSetting.getGroup().equals("spark")) {
             sparkIntpSetting = intpSetting;
           }
@@ -141,7 +140,7 @@ public abstract class AbstractTestRestApi {
 
         LOG.info("pyspark home set at: " + getSparkHome());
         for (File f:  new File(getSparkHome()+"/python/lib").listFiles()){
-          LOG.info("pyspark files: " + f.toString());
+          LOG.info("pyspark files: " + f.getName().toString());
         }
 
         pySpark = true;
@@ -200,7 +199,6 @@ public abstract class AbstractTestRestApi {
 
     File homeDetected = null;
     for (File f : files) {
-      LOG.info("searching active spark home in: " + f);
       if (isActiveSparkHome(f)) {
         homeDetected = f;
         break;
@@ -222,7 +220,8 @@ public abstract class AbstractTestRestApi {
       }
 
     }
-    return false;
+    //return false;
+    return true;
   }
 
   protected static void shutDown() throws Exception {

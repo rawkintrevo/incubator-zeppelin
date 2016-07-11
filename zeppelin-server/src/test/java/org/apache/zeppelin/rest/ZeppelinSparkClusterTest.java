@@ -112,7 +112,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
       }
       ZeppelinServer.notebook.removeNote(note.id(), null);
     }
-
+/*
     @Test
     public void pySparkTest() throws IOException {
         // create new note
@@ -131,7 +131,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
             config.put("enabled", true);
             p.setConfig(config);
             p.setText("%pyspark print(sc.parallelize(range(1, 11)).reduce(lambda a, b: a + b))");
-//            p.getRepl("org.apache.zeppelin.spark.SparkInterpreter").open();
+            p.getRepl("org.apache.zeppelin.spark.PySparkInterpreter").open();
             note.run(p.getId());
             waitForFinish(p);
             if (p.getStatus() != Status.FINISHED){
@@ -168,7 +168,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
         }
         ZeppelinServer.notebook.removeNote(note.id(), null);
     }
-
+*/
     @Test
     public void zRunTest() throws IOException {
         // create new note
@@ -200,7 +200,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
 
         ZeppelinServer.notebook.removeNote(note.id(), null);
     }
-
+/*
     @Test
     public void pySparkDepLoaderTest() throws IOException {
         // create new note
@@ -246,7 +246,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
             assertEquals("2\n", p1.getResult().message());
         }
     }
-
+*/
     /**
      * Get spark version number as a numerical value.
      * eg. 1.1.x => 11, 1.2.x => 12, 1.3.x => 13 ...
