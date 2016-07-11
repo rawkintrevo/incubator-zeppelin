@@ -143,6 +143,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
         }
         ZeppelinServer.notebook.removeNote(note.id(), null);
     }
+*/
 
     @Test
     public void pySparkAutoConvertOptionTest() throws IOException {
@@ -160,7 +161,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
             p.setConfig(config);
             p.setText("%pyspark\nfrom pyspark.sql.functions import *\n"
                     + "print(sqlContext.range(0, 10).withColumn('uniform', rand(seed=10) * 3.14).count())");
-//            p.getRepl("org.apache.zeppelin.spark.SparkInterpreter").open();
+            p.getRepl("org.apache.zeppelin.spark.SparkInterpreter").open();
             note.run(p.getId());
             waitForFinish(p);
             assertEquals(Status.FINISHED, p.getStatus());
@@ -168,7 +169,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
         }
         ZeppelinServer.notebook.removeNote(note.id(), null);
     }
-*/
+
     @Test
     public void zRunTest() throws IOException {
         // create new note
