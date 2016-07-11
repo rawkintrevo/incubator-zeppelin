@@ -220,8 +220,7 @@ public abstract class AbstractTestRestApi {
       }
 
     }
-    //return false;
-    return true;
+    return false;
   }
 
   protected static void shutDown() throws Exception {
