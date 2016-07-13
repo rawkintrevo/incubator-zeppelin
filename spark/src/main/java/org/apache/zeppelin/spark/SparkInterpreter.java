@@ -104,14 +104,6 @@ public class SparkInterpreter extends Interpreter {
   private Map<String, Object> binder;
   private SparkVersion sparkVersion;
 
-  //tg
-  public SparkILoop getInterpreter(){
-    return interpreter;
-  }
-
-  public void setInterpreter(SparkILoop updatedInterpreter){
-    this.interpreter = updatedInterpreter;
-  }
 
   public SparkInterpreter(Properties property) {
     super(property);
@@ -227,7 +219,7 @@ public class SparkInterpreter extends Interpreter {
     return dep;
   }
 
-  public DepInterpreter getDepInterpreter() {
+  private DepInterpreter getDepInterpreter() {
     Interpreter p = getInterpreterInTheSameSessionByClassName(DepInterpreter.class.getName());
     if (p == null) {
       return null;
@@ -866,7 +858,7 @@ public class SparkInterpreter extends Interpreter {
     if (lastObj != null) {
       ResourcePool resourcePool = context.getResourcePool();
       resourcePool.put(context.getNoteId(), context.getParagraphId(),
-              WellKnownResourceName.ZeppelinReplResult.toString(), lastObj);
+          WellKnownResourceName.ZeppelinReplResult.toString(), lastObj);
     }
   };
 

@@ -112,16 +112,12 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
       }
       ZeppelinServer.notebook.removeNote(note.id(), null);
     }
-/*
+
     @Test
     public void pySparkTest() throws IOException {
         // create new note
         Note note = ZeppelinServer.notebook.createNote(null);
         note.setName("note");
-        for(InterpreterSetting intpSetting : ZeppelinServer.notebook.getInterpreterFactory().get()) {
-            LOG.info("pysparktest binded terp: " + intpSetting.getGroup() + " " + intpSetting.getName());
-        }
-
         int sparkVersion = getSparkVersionNumber(note);
 
         if (isPyspark() && sparkVersion >= 12) {   // pyspark supported from 1.2.1
@@ -131,19 +127,14 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
             config.put("enabled", true);
             p.setConfig(config);
             p.setText("%pyspark print(sc.parallelize(range(1, 11)).reduce(lambda a, b: a + b))");
-            p.getRepl("org.apache.zeppelin.spark.PySparkInterpreter").open();
+//            p.getRepl("org.apache.zeppelin.spark.SparkInterpreter").open();
             note.run(p.getId());
             waitForFinish(p);
-            if (p.getStatus() != Status.FINISHED){
-                LOG.info("pySparkTest: " + p.getResult().toString());
-                LOG.info("but pyspark is: " + pySpark);
-            }
             assertEquals(Status.FINISHED, p.getStatus());
             assertEquals("55\n", p.getResult().message());
         }
         ZeppelinServer.notebook.removeNote(note.id(), null);
     }
-*/
 
     @Test
     public void pySparkAutoConvertOptionTest() throws IOException {
@@ -161,7 +152,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
             p.setConfig(config);
             p.setText("%pyspark\nfrom pyspark.sql.functions import *\n"
                     + "print(sqlContext.range(0, 10).withColumn('uniform', rand(seed=10) * 3.14).count())");
-            p.getRepl("org.apache.zeppelin.spark.SparkInterpreter").open();
+//            p.getRepl("org.apache.zeppelin.spark.SparkInterpreter").open();
             note.run(p.getId());
             waitForFinish(p);
             assertEquals(Status.FINISHED, p.getStatus());
@@ -201,7 +192,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
 
         ZeppelinServer.notebook.removeNote(note.id(), null);
     }
-/*
+
     @Test
     public void pySparkDepLoaderTest() throws IOException {
         // create new note
@@ -247,7 +238,7 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
             assertEquals("2\n", p1.getResult().message());
         }
     }
-*/
+
     /**
      * Get spark version number as a numerical value.
      * eg. 1.1.x => 11, 1.2.x => 12, 1.3.x => 13 ...
