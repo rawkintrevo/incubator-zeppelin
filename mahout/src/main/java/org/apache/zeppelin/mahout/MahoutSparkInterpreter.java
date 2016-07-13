@@ -202,6 +202,7 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
 
   }
 */
+  /*
   @Override
   public SparkContext createSparkContext() {
     logger.info("------ Create new MahoutSparkContext {} -------", getProperty("master"));
@@ -278,5 +279,5 @@ public class MahoutSparkInterpreter extends SparkInterpreter {
     SparkContext sparkContext = new SparkContext(conf);
     return sparkContext;
   }
-
+*/
 }
