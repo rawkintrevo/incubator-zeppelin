@@ -130,7 +130,9 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
 //            p.getRepl("org.apache.zeppelin.spark.SparkInterpreter").open();
             note.run(p.getId());
             waitForFinish(p);
-            assertEquals(Status.FINISHED, p.getStatus());
+
+            assertEquals("Paragraph:\nInput:\n" + p.getText() + "\nOutput:\n" + p.getResult(),
+                Status.FINISHED, p.getStatus());
             assertEquals("55\n", p.getResult().message());
         }
         ZeppelinServer.notebook.removeNote(note.id(), null);
@@ -155,7 +157,9 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
 //            p.getRepl("org.apache.zeppelin.spark.SparkInterpreter").open();
             note.run(p.getId());
             waitForFinish(p);
-            assertEquals(Status.FINISHED, p.getStatus());
+
+            assertEquals("Paragraph:\nInput:\n" + p.getText() + "\nOutput:\n" + p.getResult(),
+                Status.FINISHED, p.getStatus());
             assertEquals("10\n", p.getResult().message());
         }
         ZeppelinServer.notebook.removeNote(note.id(), null);
@@ -234,7 +238,8 @@ public class ZeppelinSparkClusterTest extends AbstractTestRestApi {
             note.run(p1.getId());
 
             waitForFinish(p1);
-            assertEquals(Status.FINISHED, p1.getStatus());
+            assertEquals("Paragraph:\nInput:\n" + p1.getText() + "\nOutput:\n" + p1.getResult(),
+                Status.FINISHED, p1.getStatus());
             assertEquals("2\n", p1.getResult().message());
         }
     }
