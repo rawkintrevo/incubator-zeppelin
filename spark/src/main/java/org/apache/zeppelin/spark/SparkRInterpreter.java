@@ -73,6 +73,9 @@ public class SparkRInterpreter extends Interpreter {
     SparkInterpreter sparkInterpreter = getSparkInterpreter();
     SparkContext sc = sparkInterpreter.getSparkContext();
     SparkVersion sparkVersion = new SparkVersion(sc.version());
+
+    String master = getProperty("master");
+
     ZeppelinRContext.setSparkContext(sc);
     if (Utils.isSpark2()) {
       ZeppelinRContext.setSparkSession(sparkInterpreter.getSparkSession());
@@ -80,7 +83,7 @@ public class SparkRInterpreter extends Interpreter {
     ZeppelinRContext.setSqlContext(sparkInterpreter.getSQLContext());
     ZeppelinRContext.setZeppelinContext(sparkInterpreter.getZeppelinContext());
 
-    zeppelinR = new ZeppelinR(rCmdPath, sparkRLibPath, port, sparkVersion);
+    zeppelinR = new ZeppelinR(rCmdPath, sparkRLibPath, port, sparkVersion, master);
     try {
       zeppelinR.open();
     } catch (IOException e) {

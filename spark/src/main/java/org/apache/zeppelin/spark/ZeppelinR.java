@@ -47,6 +47,7 @@ public class ZeppelinR implements ExecuteResultHandler {
 
   private InterpreterOutput initialOutput;
   private final int port;
+  private final String master;
   private boolean rScriptRunning;
 
   /**
@@ -109,11 +110,12 @@ public class ZeppelinR implements ExecuteResultHandler {
    * @param libPath sparkr library path
    */
   public ZeppelinR(String rCmdPath, String libPath, int sparkRBackendPort,
-      SparkVersion sparkVersion) {
+      SparkVersion sparkVersion, String master) {
     this.rCmdPath = rCmdPath;
     this.libPath = libPath;
     this.sparkVersion = sparkVersion;
     this.port = sparkRBackendPort;
+    this.master = master;
     try {
       File scriptFile = File.createTempFile("zeppelin_sparkr-", ".R");
       scriptPath = scriptFile.getAbsolutePath();
@@ -139,6 +141,7 @@ public class ZeppelinR implements ExecuteResultHandler {
     cmd.addArgument("--args");
     cmd.addArgument(Integer.toString(hashCode()));
     cmd.addArgument(Integer.toString(port));
+    cmd.addArgument(master);
     cmd.addArgument(libPath);
     cmd.addArgument(Integer.toString(sparkVersion.toNumber()));
 

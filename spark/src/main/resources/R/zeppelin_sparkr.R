@@ -20,8 +20,9 @@ args <- commandArgs(trailingOnly = TRUE)
 
 hashCode <- as.integer(args[1])
 port <- as.integer(args[2])
-libPath <- args[3]
-version <- as.integer(args[4])
+master <- args[3]
+libPath <- args[4]
+version <- as.integer(args[5])
 rm(args)
 
 print(paste("Port ", toString(port)))
@@ -30,8 +31,11 @@ print(paste("LibPath ", libPath))
 .libPaths(c(file.path(libPath), .libPaths()))
 library(SparkR)
 
+if (master == "local[*]"){
+    master <- "localhost"
+}
 
-SparkR:::connectBackend("localhost", port)
+SparkR:::connectBackend(master, port)
 
 # scStartTime is needed by R/pkg/R/sparkR.R
 assign(".scStartTime", as.integer(Sys.time()), envir = SparkR:::.sparkREnv)
